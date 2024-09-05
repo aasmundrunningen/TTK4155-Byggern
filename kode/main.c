@@ -13,14 +13,15 @@
 int main(){
     set_bit(DDRA, PA0);
     USART0_Init(9600);
-    
+
     while(1){
         set_bit(PORTA, PA0);
         _delay_ms(10);
         
         clear_bit(PORTA, PA0);
-        _delay_ms(10);
-        USART0_Transmit("A");
+        _delay_ms(10); 
+
+        USART0_Transmit(1);
     }
 
     return 0;
