@@ -10,18 +10,20 @@
 //#define loop_until_bit_is_set(reg,bit) while(!test_bit (reg , bit))
 //#define loop_until_bit_is_clear(reg,bit) while(test_bit(reg,bit))
 
+
 int main(){
     set_bit(DDRA, PA0);
-    USART0_Init(9600);
+    USART0_Init();
+    
 
     while(1){
         set_bit(PORTA, PA0);
-        _delay_ms(10);
+        _delay_ms(100);
         
         clear_bit(PORTA, PA0);
-        _delay_ms(10); 
+        _delay_ms(100); 
 
-        USART0_Transmit(1);
+        USART0_Transmit('a');
     }
 
     return 0;

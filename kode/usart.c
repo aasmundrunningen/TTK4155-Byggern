@@ -1,18 +1,21 @@
 #include "usart.h"
 #include "avr/io.h"
 
-#define FOSC 1843200// Clock Speed
+#define FOSC 4915000UL// Clock Speed
 #define BAUD 9600
-#define MYUBRR FOSC/16/BAUD-1
+const unsigned int MYUBRR = FOSC/16/BAUD-1;
 
-void USART0_Init( unsigned int ubrr ) {
+void USART0_Init() {
     /* Set baud rate */
-    UBRR0H = (unsigned char)(ubrr>>8);
-    UBRR0L = (unsigned char)ubrr;
+    UBRR0H = (unsigned char)(MYUBRR>>8);
+    UBRR0L = (unsigned char)MYUBRR;
     /* Enable receiver and transmitter */
     UCSR0B = (1<<RXEN0)|(1<<TXEN0);
     /* Set frame format: 8data, 2stop bit */
     UCSR0C = (1<<URSEL0)|(1<<USBS0)|(3<<UCSZ00);
+
+    //fdevopen(USART0_Transmit(),USART0_Receive());
+    
 }
 
 void USART0_Transmit( unsigned char data ) {
