@@ -1,9 +1,8 @@
 #include "usart.h"
 #include "avr/io.h"
+#include "config.h"
 
-#define FOSC 4915000UL// Clock Speed
-#define BAUD 9600
-const unsigned int MYUBRR = FOSC/16/BAUD-1;
+const unsigned int MYUBRR = F_CPU/16/BAUDRATE_UART-1; //prescaler for uart.
 
 void USART0_Init() {
     /* Set baud rate */

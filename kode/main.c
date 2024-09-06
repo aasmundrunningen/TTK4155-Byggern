@@ -1,5 +1,4 @@
-#define F_CPU 4915000UL
-
+#include "config.h"
 #include "avr/io.h"
 #include "util/delay.h"
 #include "usart.h"
@@ -24,7 +23,7 @@ int main(){
         _delay_ms(100); 
 
         USART0_Transmit('a');*/
-        printf("hello this is working\n");
+        printf("hello this\n");
         _delay_ms(100);
     }
 

@@ -1,5 +1,5 @@
 # List all source files to be compiled; separate with space
-SOURCE_FILES := main.c usart.c
+SOURCE_FILES := main.c source/usart.c
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := yes
 
@@ -14,15 +14,17 @@ TARGET_CPU := atmega162
 TARGET_DEVICE := m162
 
 CC := avr-gcc
-CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) -ggdb
+CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) -ggdb -Iinc
+
 
 OBJECT_FILES = $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.o)
-
+#OBJECT_FILES = $(patsubst %.c,$(BUILD_DIR)/%.o,$(SOURCE_FILES))
 .DEFAULT_GOAL := $(BUILD_DIR)/main.hex
 
+#makes the build directory and the source subdirectory
 $(BUILD_DIR):
 	mkdir $(BUILD_DIR)
-
+	mkdir $(BUILD_DIR)/source
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
