@@ -17,13 +17,15 @@ int main(){
     
 
     while(1){
-        set_bit(PORTA, PA0);
+        /*set_bit(PORTA, PA0);
         _delay_ms(100);
         
         clear_bit(PORTA, PA0);
         _delay_ms(100); 
 
-        USART0_Transmit('a');
+        USART0_Transmit('a');*/
+        printf("hello this is working\n");
+        _delay_ms(100);
     }
 
     return 0;
