@@ -1,4 +1,12 @@
 #pragma once
 
-#define F_CPU 4915000UL
-#define BAUDRATE_UART 9600
+#define F_CPU 4915000UL //CPU frequency in Hz
+#define BAUDRATE_UART 9600 //baudrate in Hz
+
+
+//bit opperations
+#define set_bit(reg,bit )( reg |= ( 1 <<bit))
+#define clear_bit( reg , bit )( reg &= ~(1 << bit ))
+#define test_bit( reg , bit )( reg & ( 1 <<bit ))
+//#define loop_until_bit_is_set(reg,bit) while(!test_bit (reg , bit))
+//#define loop_until_bit_is_clear(reg,bit) while(test_bit(reg,bit))

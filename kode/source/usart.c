@@ -36,3 +36,31 @@ int USART0_Poll_Receive(FILE *file) {
     /* Get and return received data from buffer */
     return UDR0;
 }
+
+
+char* USART0_data_buffer;
+int USART0_data_buffer_counter;
+int USART0_data_buffer_size;
+int USART0_data_ready = 0;
+void USART0_RX_IRQ_Handler(void){
+    set_bit(PORTA, PA0);
+    USART0_data_buffer[USART0_data_buffer_counter] = UDR0;
+    USART0_data_buffer_counter ++;
+    if(USART0_data_buffer_size == USART0_data_buffer_counter){
+        USART0_data_buffer_counter = 0;
+        clear_bit(UCSR0B, RXCIE0); //dissables the recive interrupt flag
+        USART0_data_ready = 1;
+    }
+}
+
+int USART0_RX_DATA_Ready(){
+    return USART0_data_ready;
+}
+
+void USART0_RX_IRQ_Enable(char* data_buffer, int buffer_size){
+    USART0_data_buffer = data_buffer;
+    USART0_data_buffer_counter = 0;
+    USART0_data_buffer_size = buffer_size;
+    USART0_data_ready = 0;
+    set_bit(UCSR0B, RXCIE0);
+}

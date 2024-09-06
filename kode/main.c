@@ -2,20 +2,26 @@
 #include "avr/io.h"
 #include "util/delay.h"
 #include "usart.h"
+#include "avr/interrupt.h"
 
-#define set_bit(reg,bit )( reg |= ( 1 <<bit))
-#define clear_bit( reg , bit )( reg &= ~(1 << bit ))
-#define test_bit( reg , bit )( reg & ( 1 <<bit ))
-//#define loop_until_bit_is_set(reg,bit) while(!test_bit (reg , bit))
-//#define loop_until_bit_is_clear(reg,bit) while(test_bit(reg,bit))
-
+char buffer[8];
 
 int main(){
-    set_bit(DDRA, PA0);
+    //set_bit(DDRA, PA0);
     USART0_Init();
     
+    sei(); //enables global interrupts
+    USART0_RX_IRQ_Enable(&buffer, 8);
 
     while(1){
+        if(USART0_RX_DATA_Ready()){
+            for(int i = 0; i < 8; i++){
+                printf("%c",buffer[i]);
+            }
+            printf("\n");
+            USART0_RX_IRQ_Enable(&buffer, 8);
+
+        }
         /*set_bit(PORTA, PA0);
         _delay_ms(100);
         
@@ -23,8 +29,12 @@ int main(){
         _delay_ms(100); 
 
         USART0_Transmit('a');*/
-        printf("hello this\n");
-        _delay_ms(100);
+        //char c = USART0_Poll_Receive(NULL);
+        
+        //clear_bit(PORTA, PA0);
+        //_delay_ms(10);
+        //printf("h");
+        //_delay_ms(10);
     }
 
     return 0;
