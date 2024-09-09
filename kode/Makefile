@@ -1,5 +1,5 @@
 # List all source files to be compiled; separate with space
-SOURCE_FILES := main.c source/usart.c source/interrupts.c
+SOURCE_FILES := main.c source/usart.c source/interrupts.c source/SRAM.c
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := yes
 
@@ -13,7 +13,7 @@ BUILD_DIR := build
 TARGET_CPU := atmega162
 TARGET_DEVICE := m162
 
-CC := avr-gcc
+CC := avr-gcc #-Wl,--defsym=__heap_start=0x1800,--defsym=__heap_end=0x1FFF
 CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) -ggdb -Iinc
 
 
