@@ -13,3 +13,9 @@
 #define WRITEBACK_MODE 1 // 1 = instant writeback // 
 
 #define UART_CALLBACK //sens all characters back to the UART terminal
+
+#define ADC_address 0x1410
+#define OLED_start_command 0x1000
+#define OLED_command_register_size 0x1FF
+#define OLED_start_data 0x1200
+#define OLED_data_register_size 0x1FF
