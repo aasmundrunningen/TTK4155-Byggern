@@ -13,6 +13,8 @@
 #define WRITEBACK_MODE 1 // 1 = instant writeback // 
 
 #define UART_CALLBACK //sens all characters back to the UART terminal
+#define JOYSTICK_CALIBRATION
+#define JOYSTICK_deadzone 10
 
 #define ADC_address 0x1410
 #define OLED_start_command 0x1000

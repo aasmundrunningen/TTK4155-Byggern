@@ -1,74 +1,73 @@
 #include "analog_input.h"
 #include "config.h"
-#include <stdbool.h>
+#include "adc.h"
+#include "avr/io.h"
+#include <stdio.h>
 #include <stdlib.h>
 
-void joystick_init(bool calibration) {
-    int * calibration_value = (int*)malloc(sizeof(int));
+void calibrate_joystick(joystick_offset* offset) {
+    adc_update();
+    offset->x_dir = get_adc_data(0);
+    offset->y_dir = get_adc_data(1);
+    return;
+}
+
+void joystick_slider_init(joystick_offset* offset, joystick_direction * joystick_dir, input_value * joystick_slider_values) {
     
-    input_value * joystick_xy_values = (input_value*)malloc(sizeof(input_value));
-    joystick_xy_values->x_percentage = 0;
-    joystick_xy_values->y_percentage = 0;
+    //input_value * joystick_slider_values = (input_value*)malloc(sizeof(input_value));
+    joystick_slider_values->x_percentage = 0;
+    joystick_slider_values->y_percentage = 0;
+    joystick_slider_values->left_slider_percetage = 0;
+    joystick_slider_values->right_slider_percetage = 0;
 
-    joystick_direction * joystick_dir = (joystick_direction*)malloc(sizeof(joystick_direction));
-    joystick_dir = NEUTRAL;    
+    //joystick_direction * joystick_dir = (joystick_direction*)malloc(sizeof(joystick_direction));
+    *joystick_dir = NEUTRAL;    
 
-    if (calibration) {
-        calibrate_joystick();
-    }
-
+    //joystick_offset* offset = (joystick_offset*)malloc(sizeof(joystick_offset*));
+    offset->x_dir = 0;
+    offset->y_dir = 0;
+    #ifdef JOYSTICK_CALIBRATION
+        calibrate_joystick(offset);
+    #endif
 }
 
 void calculate_joystick_direction(input_value* values, joystick_direction* dir) {
-    if (abs(values->x_percentage) < 10 && abs(values->y_percentage) < 10) {
-        dir = NEUTRAL;
+    uint8_t deadzone = JOYSTICK_deadzone;
+    if (abs(values->x_percentage) < deadzone && abs(values->y_percentage) < deadzone) {
+        *dir = NEUTRAL;
         return;
     } 
 
     if (abs(values->y_percentage) - abs(values->x_percentage) > 0) {
         if (values->y_percentage > 0) {
-            dir = UP;
+            *dir = UP;
             return;
         } else {
-            dir = DOWN;
+            *dir = DOWN;
             return;
         }
     } else {
         if (values->x_percentage > 0) {
-            dir = RIGHT;
+            *dir = RIGHT;
             return;
         } else {
-            dir = LEFT;
+            *dir = LEFT;
             return;
         }
     }
 }
-volatile char *adc = (char *) ADC_address;
-void update_joystick_values(input_value* values) {
-    adc = rand();
-
-    _delay_us(20);
-
-    //(x-128+offsett)*128/100
-    values->x_percentage = adc*calibration_value + calibration_offset;
-    values->y_percentage = adc*calibration_value;
-
+void update_joystick_slider_values(input_value* values, joystick_offset* offset) {
+    adc_update();
+    values->x_percentage = ((int16_t)(get_adc_data(0) - offset->x_dir)*100/128);
+    values->y_percentage = ((int16_t)(get_adc_data(1) - offset->y_dir)*100/128);
+    values->left_slider_percetage = get_adc_data(2);
+    values->right_slider_percetage = get_adc_data(3);
     return;
 }
 
-void calibrate_joystick() {
-    // calibrate the joystick
-    bool calibrated = false;
-    bool left = false;
-    bool right = false;
-    bool up = false;
-    bool down = false;
-
-    while (!calibrated) {
-        if (!left) {
-                
-            continue;
-        }
-    }
-    return;
+void print_dir(joystick_direction* dir) {
+    printf(dir);
+};
+void print_xy(input_value* values) {
+    printf("%i   %i \n", values->x_percentage, values->y_percentage);
 }
