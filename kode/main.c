@@ -6,20 +6,16 @@
 #include "avr/interrupt.h"
 #include "SRAM.h"
 #include "adc.h"
+#include "OLED.h"
 #include <stdlib.h>
 
 char buffer[8];
-
-volatile char *oled = (char *) OLED_start_command;
-joystick_offset offset;
-joystick_direction joystick_dir;
-input_value joystick_slider_values;
 
 int main(){
     USART0_Init();
     SRAM_init();
     adc_init();
-    joystick_slider_init(&offset, &joystick_dir, &joystick_slider_values);
+    analog_init();
     //SRAM_test();
 
     USART0_RX_IRQ_Enable(&buffer, 1);
@@ -27,11 +23,10 @@ int main(){
 
     while(1){
         _delay_ms(500);
-        update_joystick_slider_values(&joystick_slider_values, &offset);
-        calculate_joystick_direction(&joystick_slider_values, &joystick_dir);
-
-        print_xy(&joystick_slider_values);
-        //print_dir(&joystick_dir);        
+        update_analog_values();
+        calculate_joystick_direction();
+        print_joystick();
+        print_slider();
         //SRAM_test();
 
 

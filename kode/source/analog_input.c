@@ -1,73 +1,93 @@
 #include "analog_input.h"
 #include "config.h"
 #include "adc.h"
+#include "util/delay.h"
 #include "avr/io.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-void calibrate_joystick(joystick_offset* offset) {
+ANALOG_DATA analog_data;
+
+void calibrate_joystick() {
+    printf("calibrating joystick: ");
     adc_update();
-    offset->x_dir = get_adc_data(0);
-    offset->y_dir = get_adc_data(1);
+    analog_data.joystick_offsett_x = 0;
+    analog_data.joystick_offsett_y = 0;
+    for(int i = 0; i < JOYSTICK_CALIBRATION_SAMPLES; i++){
+        analog_data.joystick_offsett_x += get_adc_data(0);
+        analog_data.joystick_offsett_y += get_adc_data(1);
+        _delay_ms(1);
+    }
+    analog_data.joystick_offsett_x = analog_data.joystick_offsett_x/JOYSTICK_CALIBRATION_SAMPLES;
+    analog_data.joystick_offsett_y = analog_data.joystick_offsett_y/JOYSTICK_CALIBRATION_SAMPLES;
+    printf("offsett_x: %i   offsett_y: %i\n", analog_data.joystick_offsett_x, analog_data.joystick_offsett_y);
     return;
 }
 
-void joystick_slider_init(joystick_offset* offset, joystick_direction * joystick_dir, input_value * joystick_slider_values) {
-    
-    //input_value * joystick_slider_values = (input_value*)malloc(sizeof(input_value));
-    joystick_slider_values->x_percentage = 0;
-    joystick_slider_values->y_percentage = 0;
-    joystick_slider_values->left_slider_percetage = 0;
-    joystick_slider_values->right_slider_percetage = 0;
+void analog_init(){
+    analog_data.joystick_offsett_x = 0;
+    analog_data.joystick_offsett_y = 0;
+    analog_data.joystick_x = 0;
+    analog_data.joystick_y = 0;
+    analog_data.slider_1 = 0;
+    analog_data.slider_2 = 0;
+    analog_data.joystick_direction = NEUTRAL;
 
-    //joystick_direction * joystick_dir = (joystick_direction*)malloc(sizeof(joystick_direction));
-    *joystick_dir = NEUTRAL;    
 
-    //joystick_offset* offset = (joystick_offset*)malloc(sizeof(joystick_offset*));
-    offset->x_dir = 0;
-    offset->y_dir = 0;
     #ifdef JOYSTICK_CALIBRATION
-        calibrate_joystick(offset);
+        calibrate_joystick();
     #endif
 }
 
-void calculate_joystick_direction(input_value* values, joystick_direction* dir) {
-    uint8_t deadzone = JOYSTICK_deadzone;
-    if (abs(values->x_percentage) < deadzone && abs(values->y_percentage) < deadzone) {
-        *dir = NEUTRAL;
-        return;
+void calculate_joystick_direction(){
+    if (abs(analog_data.joystick_x) < JOYSTICK_deadzone && abs(analog_data.joystick_y) < JOYSTICK_deadzone) {
+        analog_data.joystick_direction = NEUTRAL;
+        return;adc_update();
     } 
 
-    if (abs(values->y_percentage) - abs(values->x_percentage) > 0) {
-        if (values->y_percentage > 0) {
-            *dir = UP;
+    if (abs(analog_data.joystick_y) - abs(analog_data.joystick_x) > 0) {
+        if (analog_data.joystick_y > 0) {
+            analog_data.joystick_direction = UP;
             return;
         } else {
-            *dir = DOWN;
+            analog_data.joystick_direction = DOWN;
             return;
         }
     } else {
-        if (values->x_percentage > 0) {
-            *dir = RIGHT;
+        if (analog_data.joystick_x > 0) {
+            analog_data.joystick_direction = RIGHT;
             return;
         } else {
-            *dir = LEFT;
+            analog_data.joystick_direction = LEFT;
             return;
         }
     }
 }
-void update_joystick_slider_values(input_value* values, joystick_offset* offset) {
+void update_analog_values() {
     adc_update();
-    values->x_percentage = ((int16_t)(get_adc_data(0) - offset->x_dir)*100/128);
-    values->y_percentage = ((int16_t)(get_adc_data(1) - offset->y_dir)*100/128);
-    values->left_slider_percetage = get_adc_data(2);
-    values->right_slider_percetage = get_adc_data(3);
+    analog_data.joystick_x = ((int16_t)(get_adc_data(0) - analog_data.joystick_offsett_x));
+    analog_data.joystick_y = ((int16_t)(get_adc_data(1) - analog_data.joystick_offsett_x));
+    //some currsed shit with hardware, different scalling off values.
+    if(analog_data.joystick_x > 0){
+        analog_data.joystick_x = analog_data.joystick_x*100/156;
+    }
+    if(analog_data.joystick_y > 0){
+        analog_data.joystick_y = analog_data.joystick_y*100/156;
+    }
+    analog_data.slider_1 = get_adc_data(2);
+    analog_data.slider_2 = get_adc_data(3);
     return;
 }
 
-void print_dir(joystick_direction* dir) {
-    printf(dir);
-};
-void print_xy(input_value* values) {
-    printf("%i   %i \n", values->x_percentage, values->y_percentage);
+void print_joystick() {
+    printf("joystick_data: direction: %s, x: %i, y: %i\n", 
+        JOYSTICK_DIRECTION_string[analog_data.joystick_direction], 
+        analog_data.joystick_x, 
+        analog_data.joystick_y);
+}
+
+void print_slider(){
+    printf("Slider 1: %i, Slider 2: %i\n",
+        analog_data.slider_1,
+        analog_data.slider_2);
 }
