@@ -8,6 +8,7 @@ typedef enum {
 
 
 void OLED_init();
-void OLED_write_command(uint8_t command1, uint8_t command2 = 0xe3);
 void OLED_write_screen();
-void printf_oled(char[] input, FONT_size font_size);
+void print_letter(char letter);
+void printf_oled(char input[], uint8_t size, FONT_size font_size);
+void OLED_update_screen();

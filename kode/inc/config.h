@@ -17,8 +17,14 @@
 #define JOYSTICK_deadzone 10
 #define JOYSTICK_CALIBRATION_SAMPLES 1
 
+
 #define ADC_address 0x1410
 #define OLED_start_command 0x1000
 #define OLED_command_register_size 0x1FF
 #define OLED_start_data 0x1200
 #define OLED_data_register_size 0x1FF // 512 bytes = half of what is needed for the full oled (1024 bytes). Need to loop twice. (reset counter)
+
+
+#define SRAM_START_ADDRESS 0x1800
+#define SCREEN_BUFFER 0x1800
+#define SCREEN_BUFFER_size 0x4000
