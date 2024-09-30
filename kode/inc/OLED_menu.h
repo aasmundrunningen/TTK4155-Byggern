@@ -15,31 +15,8 @@
                                                       {"option331", "option332", "option333"}}};
 };
 */
-static struct OLED_menu PROGMEM {
-    const char* menu_0[3]= {"option1", "option2" "option3"};
-    const char* menu_1[3][3] = {
-        {"option11", "option12", "option13"},
-        {"option21", "option22", "option23"},
-        {"option31", "option32", "option33"}
-    };
-    const char* menu_2[3][3][3] = {
-        {
-            {"option111", "option112", "option113"},
-            {"option121", "option122","option123"},
-            {"option131", "option132", "option133"}
-        },
-        {
-            {"option211", "option212", "option213"},
-            {"option221", "option222", "option223"},
-            {"option231", "option232", "option233"}
-        },
-        {
-            {"option311", "option312", "option313"},
-            {"option321", "option322", "option323"},
-            {"option331", "option332", "option333"}
-        }
-    };
-} menu;
+
+
 
 typedef struct  {
     uint8_t menu_level;
@@ -49,5 +26,6 @@ typedef struct  {
 } OLED_menu_state_machine;
 
 void handle_button_press();
-void handle_joystick_movement(ANALOG_DATA analog_data);
+void handle_joystick_movement();
 void draw_menu();
+void OLED_menu_print_values();

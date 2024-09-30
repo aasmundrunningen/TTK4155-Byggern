@@ -20,7 +20,7 @@ void OLED_init() {
     OLED_clear_screen();
     OLED_print_string("BOOTING", 7, 4, 4, 0);
     OLED_update_screen();
-    _delay_ms(2000);
+    _delay_ms(1000);
     OLED_clear_screen();
     OLED_update_screen();
     printf("Finished OLED initialization\n");
@@ -70,7 +70,7 @@ void OLED_print_byte(uint8_t _value, uint8_t _page, uint8_t _coloum){
 }
 
 void OLED_clear_screen(){
-    for (int i = 0; i < 8192; i++) {
+    for (int i = 0; i < 1024; i++) {
         screen_buffer[i] = 0;
     }
 }
@@ -82,6 +82,8 @@ void OLED_update_screen(){
     
     for(int page = 0; page < 8; page ++){
         *OLED_command_register = 0xB0 + page; //update page
+        *OLED_command_register = 0x00;
+        *OLED_command_register = 0x10;
         for(int i = 0; i < 128; i++){
                 *OLED_data_register = screen_buffer[i + page*128];
         }

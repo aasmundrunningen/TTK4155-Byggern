@@ -47,18 +47,18 @@ void calculate_joystick_direction(){
 
     if (abs(analog_data.joystick_y) - abs(analog_data.joystick_x) > 0) {
         if (analog_data.joystick_y > 0) {
-            analog_data.joystick_direction = UP;
-            return;
-        } else {
-            analog_data.joystick_direction = DOWN;
-            return;
-        }
-    } else {
-        if (analog_data.joystick_x > 0) {
             analog_data.joystick_direction = RIGHT;
             return;
         } else {
             analog_data.joystick_direction = LEFT;
+            return;
+        }
+    } else {
+        if (analog_data.joystick_x > 0) {
+            analog_data.joystick_direction = UP;
+            return;
+        } else {
+            analog_data.joystick_direction = DOWN;
             return;
         }
     }
@@ -76,14 +76,17 @@ void update_analog_values() {
     }
     analog_data.slider_1 = get_adc_data(2);
     analog_data.slider_2 = get_adc_data(3);
+    calculate_joystick_direction();
     return;
 }
 
 void print_joystick() {
-    printf("joystick_data: direction: %s, x: %i, y: %i\n", 
+    printf("joystick_data: direction: %s, x: %i, y: %i, slider 1: %i, slider 2: %i\n", 
         JOYSTICK_DIRECTION_string[analog_data.joystick_direction], 
         analog_data.joystick_x, 
-        analog_data.joystick_y);
+        analog_data.joystick_y,
+        analog_data.slider_1,
+        analog_data.slider_2);
 }
 
 void print_slider(){
