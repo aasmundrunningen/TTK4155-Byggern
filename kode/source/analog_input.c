@@ -33,10 +33,14 @@ void analog_init(){
     analog_data.slider_2 = 0;
     analog_data.joystick_direction = NEUTRAL;
 
-
+    
     #ifdef JOYSTICK_CALIBRATION
         calibrate_joystick();
     #endif
+    
+    clear_bit(DDRE, DDE0);
+    clear_bit(EMCUCR,ISC2);
+    set_bit(GICR, INT2);
 }
 
 void calculate_joystick_direction(){
@@ -82,16 +86,12 @@ void update_analog_values() {
 void print_joystick() {
     printf("joystick_data: direction: %s, x: %i, y: %i\n", 
         JOYSTICK_DIRECTION_string[analog_data.joystick_direction], 
-        analog_data.joystick_x, 
-        analog_data.joystick_y);
+        analog_data.joystick_x, analog_data.joystick_y);
+
 }
 
-void print_slider(){
-    printf("Slider 1: %i, Slider 2: %i\n",
-        analog_data.slider_1,
-        analog_data.slider_2);
-}
-
-ANALOG_DATA get_analog_data(){
-    return analog_data;
+void INT2_joystick_handler(){
+    clear_bit(GICR, INT2);
+    printf("interrupt working:)");
+    //set_bit(GICR, INT2);
 }
