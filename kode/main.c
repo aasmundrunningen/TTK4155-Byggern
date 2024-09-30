@@ -20,40 +20,13 @@ int main(){
 
     timer0_enable_IRQ();
     USART0_RX_IRQ_Enable(&buffer, 1);
-    
-    OLED_init();
-    //print_letter('f', 0, 0);
-    //print_letter('h', 0, 127-7);
-    //print_letter('h', 1, 0);
-    //print_letter('f', 7, 127-7);
-    //print_letter('h', 7, 127-7);
-    for(int i = 0; i < 128; i++){
-        //print_byte(0b11111110 + i%2, 0, i);
-        //print_byte(0b01111011 + (i%2 << 7), 7, i);
-        //print_byte(0b01011011 + (i%2 << 7), 7, i);
-    }
-    OLED_update_screen();
     sei(); //enables global interrupts
 
 
+    OLED_init();
+
     while(1){
         _delay_ms(500);
-        //update_analog_values();
-        //calculate_joystick_direction();
-        //print_joystick();
-        //print_slider();
-        //SRAM_test();
-        //printf_oled('I', 1,BIG);
-        //test_oled();
-        //print_letter('f');
-
     }
     return 0;
 }
-
-
-
-
-print_letter(, inverted)
-print_line(solid, dashed)
-print_string(med nevvline)

@@ -17,22 +17,62 @@ void OLED_init() {
     for(int i = 0; i < sizeof(oled_init_sequence); i++){
         *OLED_command_register = oled_init_sequence[i];
     }
-
-    for (int i = 0; i < 8192; i++) {
-        screen_buffer[i] = 0xFF;
-    }
+    OLED_clear_screen();
+    OLED_print_string("BOOTING", 7, 4, 4, 0);
+    OLED_update_screen();
+    _delay_ms(2000);
+    OLED_clear_screen();
     OLED_update_screen();
     printf("Finished OLED initialization\n");
 }
 
-void print_letter(char letter, uint8_t page, uint8_t coloum){
+void OLED_print_letter(char _letter, uint8_t _coloum, uint8_t _page, uint8_t _inverted){
     for(int i = 0; i < 8; i++){
-        screen_buffer[i + coloum*8 + page*128] = pgm_read_byte(&font8[(uint8_t)letter - 32][i]);
+        if(_inverted){
+            screen_buffer[i + _coloum*8 + _page*128] = ~pgm_read_byte(&font8[(uint8_t)_letter - 32][i]);    
+        }
+        else{
+            screen_buffer[i + _coloum*8 + _page*128] = pgm_read_byte(&font8[(uint8_t)_letter - 32][i]);
+        }
     }
 }
 
-void print_byte(uint8_t value, uint8_t page, uint8_t coloum){
-    screen_buffer[coloum + page*128] = value;
+void OLED_print_line(uint8_t _start_coloum, uint8_t _row, uint8_t _length, uint8_t _dashed){
+    for(int i = 0; i < _length; i++){
+        screen_buffer[_start_coloum+i + _row/8*128] |= (!_dashed | i%2) << _row%8;
+    }
+}
+
+int OLED_print_string(char _string[], uint8_t _string_size, uint8_t _coloum, uint8_t _page, uint8_t _inverted){
+    int error = 0;
+    
+    for(int i = 0; i < _string_size; i++){
+        if(_string[i] == '\n'){
+            _page ++;
+            _coloum = 0;
+        }
+        else{
+            if(_coloum > 15 || _page > 7){
+                error = 1;
+            }
+            else{
+                OLED_print_letter(_string[i], _coloum, _page, _inverted);
+                _coloum ++;
+            }
+        }
+
+    }
+    return error;
+}
+
+void OLED_print_byte(uint8_t _value, uint8_t _page, uint8_t _coloum){
+    screen_buffer[_coloum + _page*128] = _value;
+}
+
+void OLED_clear_screen(){
+    for (int i = 0; i < 8192; i++) {
+        screen_buffer[i] = 0;
+    }
 }
 
 void OLED_update_screen(){
@@ -49,37 +89,4 @@ void OLED_update_screen(){
     
 }
 
-void printf_oled(char input[], uint8_t size, FONT_size font_size) {
-    uint8_t current_char_index;
-    switch (font_size) {
-    case BIG:
-        for (int i = 0; i < size; i++) {
-            printf("-----\n");
-            for(int j = 0; j < 8; j++){
-                *OLED_data_register = font8[input[i]-32][j];
-                printf("%i\n", input[i]);
-                /**OLED_data_register = 0b00000000;    
-                *OLED_data_register = 0b10000001;
-                *OLED_data_register = 0b11111111;
-                *OLED_data_register = 0b10000001;
-                *OED_data_register = 0b00000000;*/
-            }
-        }
-        break;
-    case NORMAL:
-        for (int i = 0; i < size; i++) {
-            current_char_index =  input[i] - 32;
-        }
-        break;
-    case SMALL:
-        for (int i = 0; i < size; i++) {
-            current_char_index = input[i] - 32;
-        }
-        break;
-    }
-}
-
-void OLED_write_screen(){
-
-}
  
