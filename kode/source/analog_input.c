@@ -91,3 +91,7 @@ void print_slider(){
         analog_data.slider_1,
         analog_data.slider_2);
 }
+
+ANALOG_DATA get_analog_data(){
+    return analog_data;
+}
