@@ -7,50 +7,32 @@
 #include "avr/pgmspace.h"
 
 
-const uint8_t oled_init_sequence[] = {0xae, 0xa1, 0xda, 0x12, 0xc8, 0xa8, 0x3f, 0xd5, 0x80, 0x81, 0x50, 0xd9, 0x21, 0x20, 0x02, 0xdb, 0x30, 0xad, 0x00, 0xa4, 0xa6, 0xaf};
+const uint8_t oled_init_sequence[] = {0xae, 0xa1, 0xda, 0x12, 0xc8, 0xa8, 0x3f, 0xd5, 0x80, 0x81, 0x50, 0xd9, 0x21, 0x20, 0x02, 0xdb, 0x30, 0xad, 0x00, 0xa4, 0xa6, 0x40, 0xaf};
 volatile uint8_t * OLED_command_register = (uint8_t*)OLED_start_command;
 volatile uint8_t * OLED_data_register = (uint8_t*)OLED_start_data;
 
 volatile uint8_t * screen_buffer = (uint8_t*)SCREEN_BUFFER;
-uint8_t current_screen_buffer = 0;
 
 void OLED_init() {
     for(int i = 0; i < sizeof(oled_init_sequence); i++){
         *OLED_command_register = oled_init_sequence[i];
     }
 
-    for (int i = 0; i < 8192*2; i++) {
-        screen_buffer[i] = 0;
+    for (int i = 0; i < 8192; i++) {
+        screen_buffer[i] = 0xFF;
     }
-
-
-    //set point to 0
-    *OLED_command_register = 0x00;
-    *OLED_command_register = 0x10;
-    
-    //set page to 0
-    *OLED_command_register = 0x22;
-    *OLED_command_register = 0x00;
-    for(int page = 0; page < 8; page ++){
-        *OLED_command_register = 0x22;
-        *OLED_command_register = page;
-        for(int i = 0; i < 128; i++){
-                *OLED_data_register = 0;
-        }
-    }
-
+    OLED_update_screen();
     printf("Finished OLED initialization\n");
+}
 
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 8; j++)
-        screen_buffer[i*8 + j] = pgm_read_byte(&font8[i][j]) ;
+void print_letter(char letter, uint8_t page, uint8_t coloum){
+    for(int i = 0; i < 8; i++){
+        screen_buffer[i + coloum*8 + page*128] = pgm_read_byte(&font8[(uint8_t)letter - 32][i]);
     }
 }
 
-void print_letter(char letter){
-    for(int i = 0; i < 8; i++){
-        *OLED_data_register = pgm_read_byte(&font8[(uint8_t)letter - 32][i]);
-    }
+void print_byte(uint8_t value, uint8_t page, uint8_t coloum){
+    screen_buffer[coloum + page*128] = value;
 }
 
 void OLED_update_screen(){
@@ -58,14 +40,10 @@ void OLED_update_screen(){
     *OLED_command_register = 0x00;
     *OLED_command_register = 0x10;
     
-    //set page to 0
-    *OLED_command_register = 0x22;
-    *OLED_command_register = 0x00;
     for(int page = 0; page < 8; page ++){
-        *OLED_command_register = 0x22;
-        *OLED_command_register = page;
+        *OLED_command_register = 0xB0 + page; //update page
         for(int i = 0; i < 128; i++){
-                *OLED_data_register = screen_buffer[i + page*128 + current_screen_buffer*8192];
+                *OLED_data_register = screen_buffer[i + page*128];
         }
     }
     
