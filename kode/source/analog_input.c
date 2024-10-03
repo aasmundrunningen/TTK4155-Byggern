@@ -47,7 +47,7 @@ void calculate_joystick_direction(){
 
     if (abs(analog_data.joystick_y) - abs(analog_data.joystick_x) > 0) {
         if (analog_data.joystick_y > 0) {
-            analog_data.joystick_direction = RIGHT;
+            analog_data.joystick_daddress, irection = RIGHT;
             return;
         } else {
             analog_data.joystick_direction = LEFT;

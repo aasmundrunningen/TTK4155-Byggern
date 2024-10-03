@@ -45,43 +45,43 @@ void handle_joystick_movement() {
     }else{
         previous_joystick_state = get_analog_data().joystick_direction;
         switch (get_analog_data().joystick_direction) {
-        case NEUTRAL:
-            break;
-        case UP:
-            if (omsm.selected_line == 0) {
-                omsm.selected_line = 2;
-            } else {
-                omsm.selected_line -= 1;
-            }
-            break;
-        case DOWN:
-            if (omsm.selected_line == 2) {
-                omsm.selected_line = 0;
-            } else {
-                omsm.selected_line += 1;
-            }
-            break;
-        case LEFT:
-            if (omsm.menu_level != 0) {
-                omsm.menu_level -= 1;
-                omsm.selected_line = 0;
+            case NEUTRAL:
+                break;
+            case UP:
+                if (omsm.selected_line == 0) {
+                    omsm.selected_line = 2;
+                } else {
+                    omsm.selected_line -= 1;
+                }
+                break;
+            case DOWN:
+                if (omsm.selected_line == 2) {
+                    omsm.selected_line = 0;
+                } else {
+                    omsm.selected_line += 1;
+                }
+                break;
+            case LEFT:
+                if (omsm.menu_level != 0) {
+                    omsm.menu_level -= 1;
+                    omsm.selected_line = 0;
 
-            }
-            break;
-        case RIGHT:
-            if (omsm.menu_level == 0) {
-                omsm.menu_level += 1;
-                omsm.level0_sel = omsm.selected_line;
-                omsm.selected_line = 0;
-            } else if (omsm.menu_level == 1) {
-                omsm.menu_level += 1;
+                }
+                break;
+            case RIGHT:
+                if (omsm.menu_level == 0) {
+                    omsm.menu_level += 1;
+                    omsm.level0_sel = omsm.selected_line;
+                    omsm.selected_line = 0;
+                } else if (omsm.menu_level == 1) {
+                    omsm.menu_level += 1;
+                }
                 omsm.level1_sel = omsm.selected_line;
                 omsm.selected_line = 0;
-            }   
-            break;
+               
+                break;
         }
     }
-
 }
 
 void OLED_menu_print_values(){

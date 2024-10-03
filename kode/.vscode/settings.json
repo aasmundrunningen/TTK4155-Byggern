@@ -62,6 +62,7 @@
   "files.associations": {
     "io.h": "c",
     "stdlib.h": "c",
-    "config.h": "c"
+    "config.h": "c",
+    "timer.h": "c"
   }
 }
