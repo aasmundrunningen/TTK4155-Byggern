@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include "timer.h"
 #include "pwm.h"
+#include "can_controller.h"
+
 #include "spi.h"
 
 char buffer[8];
@@ -24,10 +26,11 @@ int main(){
     USART0_RX_IRQ_Enable(&buffer, 1);
 
     OLED_init();
-    spi_init();
-
 
     sei(); //enables global interrupts
+
+    can_controller_init();
+
 
     while(1){
         _delay_ms(500);
@@ -35,11 +38,7 @@ int main(){
         draw_menu();
         OLED_update_screen();
 
-        char data_2[3] = {0x02, 0x0f, 0x40}; //set status register as loopback with no interrupt
-        spi_transmitt_recive(data_2, 3);
-        char data[3] = {0x03, 0x0E, 0x00};
-        spi_transmitt_recive(data, 3);
-        printf("%x, %x, %x\n", (uint8_t)data[0], (uint8_t)data[1], (uint8_t)data[2]);
+
     }
     return 0;
 }

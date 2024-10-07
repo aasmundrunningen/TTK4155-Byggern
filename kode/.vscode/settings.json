@@ -63,6 +63,7 @@
     "io.h": "c",
     "stdlib.h": "c",
     "config.h": "c",
-    "timer.h": "c"
+    "timer.h": "c",
+    "can_controller.h": "c"
   }
 }
