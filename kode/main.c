@@ -31,6 +31,31 @@ int main(){
 
     can_controller_init();
 
+    uint8_t id[2] = {0b11001100, 0b00000000};
+    char data[3] = {0x23, 0x11, 0xF3};
+    can_controller_load_tx_buffer(id, data, 3, 0);
+
+    printf("higher = %x \n", can_controller_read(0x31));
+    printf("lower = %x \n", can_controller_read(0x32));
+
+    can_controller_load_tx_buffer(id, data, 3, 1);
+    can_controller_load_tx_buffer(id, data, 3, 2);
+
+
+    for (int i = 0; i < 3; i++) {
+        uint8_t addr = 0x36 + i;
+        printf("buffer0 = %x \n", can_controller_read(addr));
+    }
+
+    for (int i = 0; i < 3; i++) {
+        uint8_t addr = 0x46 + i;
+        printf("buffer1 = %x \n", can_controller_read(addr));
+    }
+
+    for (int i = 0; i < 3; i++) {
+        uint8_t addr = 0x56 + i;
+        printf("buffer2 = %x \n", can_controller_read(addr));
+    }
 
     while(1){
         _delay_ms(500);

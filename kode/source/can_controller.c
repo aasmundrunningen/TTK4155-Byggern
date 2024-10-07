@@ -1,5 +1,6 @@
 #include "avr/io.h"
 #include <stdio.h>
+#include "util/delay.h"
 #include "config.h"
 #include "can_controller.h"
 #include "spi.h"
@@ -13,7 +14,7 @@
 #define CAN_CONTROLLER_BIT_MODIFY 0x05
 #define CAN_CONTROLLER_RTS 0x80 //this is the mask, add lower tre bits for selecting buffer
 #define CAN_CONTROLLER_LOAD_TX_BUFFER 0x40
-#define CAN_CONTROLLER_READ_TX_BUFFER 
+#define CAN_CONTROLLER_READ_TX_BUFFER 0x90
 
 
 #define BFCTRL       0x0C
@@ -118,9 +119,20 @@ uint8_t can_controller_read_status(){
     return (uint8_t)data[1];
 }
 
-void can_controller_load_tx_buffer(uint16_t _id, char _data[], uint8_t _length) {
-    char spi_data[] = {}
-    spi_transmitt_recive
+void can_controller_load_tx_buffer(uint8_t _id[], char _data[], uint8_t _length, uint8_t buffer) {
+    if (_length > 8) {
+        printf("Error: Tried to send a CAN-message longer than 8 bytes");
+        return;
+    }
+    can_controller_write(0x35+buffer*16, _length); // set the length of the message to be sent
+
+    can_controller_write(0x31, _id[0]);
+    can_controller_write(0x32, _id[1]);
+
+    for (int i = 0; i < _length; i++) {
+        uint8_t address = 0x36 + 16*buffer + i;
+        can_controller_write(address, _data[i]);
+    } 
 }
 
 void can_controller_write(uint8_t _address, uint8_t _data){
