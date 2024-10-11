@@ -29,13 +29,26 @@
 #define CANINTE      0x2B
 #define CANINTF      0x2C
 #define EFLG         0x2D
-#define TXB0CTRL     0x30
-#define TXB1CTRL     0x40
-#define TXB2CTRL     0x50
-#define RXB0CTRL     0x60
-#define RXB1CTRL     0x70
 
 
+
+#define TXB0_BASE     0x30
+#define TXB1_BASE     0x40
+#define TXB2_BASE     0x50
+#define RXB0_BASE     0x60
+#define RXB1_BASE     0x70
+
+#define CTRL  0x00
+#define SIDH  0x01
+#define SIDL  0x02
+#define EID8  0x03
+#define EID0  0x04
+#define DLC   0x05
+#define DATA0 0x06
+
+
+CAN_MESSAGE recive_buffer[2];
+uint8_t recive_flag[2];
 
 void can_controller_init(){
     spi_init();
@@ -84,8 +97,12 @@ void can_controller_init(){
 
     can_controller_write(CANINTE, 0b00100011); //enables interrupt on error and recive buffer 0 and 1
 
-    can_controller_write(RXB0CTRL, 0b011001000); //RXB0CTRL, turn of mask and enable rollover to buffer 0
-    can_controller_write(RXB1CTRL, 0b011000000); //RXB1CTRL, turn of mask
+    can_controller_write(RXB0_BASE+CTRL, 0b011001000); //RXB0CTRL, turn of mask and enable rollover to buffer 0
+    can_controller_write(RXB1_BASE+CTRL, 0b011000000); //RXB1CTRL, turn of mask
+
+    can_controller_write(TXB0_BASE+SIDL, 0);
+    can_controller_write(TXB1_BASE+SIDL, 0);
+    can_controller_write(TXB2_BASE+SIDL, 0);
 
     #ifdef CAN_LOOPBACK
         can_controller_write(0x0f, 0x40); //set status register in loopback
@@ -93,6 +110,52 @@ void can_controller_init(){
         can_controller_write(0x0f, 0x00); //set status register in normal
     #endif
 
+    can_controller_recive_IRQ_enable();
+
+}
+
+void can_controller_send(CAN_MESSAGE _message, uint8_t buffer) {
+    if (_message.length > 8) {
+        printf("Error: Tried to send a CAN-message longer than 8 bytes");
+        return;
+    }
+    can_controller_write(TXB0_BASE+DLC+buffer*16, _message.length); // set the length of the message to be sent
+
+    
+    can_controller_write(TXB0_BASE+SIDH+buffer*16, _message.id);
+
+    for (int i = 0; i < _message.length; i++) {
+        uint8_t address = TXB0_BASE+DATA0+16*buffer+i;
+        can_controller_write(address, _message.data[i]);
+    }
+
+    can_controller_rts(buffer);
+}
+
+void can_controller_IRQ_handler(){
+    uint8_t status = can_controller_read_status();
+    if(status&1){
+        //recive buffer 0
+        recive_flag[0]=1;
+        recive_buffer[0] = can_controller_read_rx_buffer(0);
+        can_controller_bit_modify(CANINTF, 1,0);
+    }
+    if(status&2){
+        recive_flag[1]=1;
+        recive_buffer[1] = can_controller_read_rx_buffer(1);
+        can_controller_bit_modify(CANINTF, 2,0);
+    }
+    
+}
+
+void can_controller_recive_IRQ_enable(){
+    clear_bit(DDRD,PIN2); //set pin as input
+    //set interrupt on falling edge of int0
+    set_bit(MCUCR,ISC01);
+    clear_bit(MCUCR,ISC00);
+
+    //enables interrupt on int0
+    set_bit(GICR,INT0); 
 }
 
 uint8_t can_controller_read(uint8_t _address){
@@ -119,20 +182,21 @@ uint8_t can_controller_read_status(){
     return (uint8_t)data[1];
 }
 
-void can_controller_load_tx_buffer(uint8_t _id[], char _data[], uint8_t _length, uint8_t buffer) {
-    if (_length > 8) {
-        printf("Error: Tried to send a CAN-message longer than 8 bytes");
-        return;
+
+CAN_MESSAGE can_controller_read_rx_buffer(uint8_t _buffer){
+    uint8_t base_address = RXB0_BASE+_buffer*16;
+    CAN_MESSAGE message;
+    message.id = can_controller_read(base_address+SIDH);
+    message.length = can_controller_read(base_address+DLC);
+    for(int i = 0; i < 8; i++){
+        if(i < message.length){
+            message.data[i] = can_controller_read(base_address+DATA0+i);
+        }else{
+            message.data[i] = 0;
+        }
+
     }
-    can_controller_write(0x35+buffer*16, _length); // set the length of the message to be sent
-
-    can_controller_write(0x31, _id[0]);
-    can_controller_write(0x32, _id[1]);
-
-    for (int i = 0; i < _length; i++) {
-        uint8_t address = 0x36 + 16*buffer + i;
-        can_controller_write(address, _data[i]);
-    } 
+    return message;
 }
 
 void can_controller_write(uint8_t _address, uint8_t _data){
@@ -145,9 +209,34 @@ void can_controller_bit_modify(uint8_t _address, uint8_t _mask, uint8_t _data){
     spi_transmitt_recive(data, 4);
 }
 
-void can_controller_rts(uint8_t _id){
-    char data[] = {CAN_CONTROLLER_RTS | _id};
+void can_controller_rts(uint8_t _buffer){
+    char data[] = {CAN_CONTROLLER_RTS};
+    data[0] = data[0] | (1<<_buffer);
     spi_transmitt_recive(data, 1);
 }
 
+CAN_MESSAGE message_rx;
+CAN_MESSAGE message_tx;
 
+uint8_t x[] = {1,0,0};
+void can_controller_test(){   
+    message_tx.id = 24;
+    message_tx.length = 8;
+    strcpy(message_tx.data, "hei du!");
+
+    can_controller_send(message_tx, 0);
+    printf("id:%d, length:%d, data0:%c\n",
+        can_controller_read(TXB0_BASE+SIDH),
+        can_controller_read(TXB0_BASE+DLC),
+        can_controller_read(TXB0_BASE+DATA0));
+    
+
+    _delay_ms(500);
+    printf("recived: flag:%d data:%s\n", recive_flag[0], recive_buffer[0].data);
+    printf("recived: flag:%d data:%s\n", recive_flag[1], recive_buffer[1].data);
+    
+    
+    /*message_rx = can_controller_read_rx_buffer(0);
+    printf("recived: id:%d, length:%d, data:%s\n",message_rx.id, message_rx.length, message_rx.data);
+    */
+}
