@@ -233,7 +233,6 @@ void can_controller_test(){
 
     _delay_ms(500);
     printf("recived: flag:%d data:%s\n", recive_flag[0], recive_buffer[0].data);
-    printf("recived: flag:%d data:%s\n", recive_flag[1], recive_buffer[1].data);
     
     
     /*message_rx = can_controller_read_rx_buffer(0);
