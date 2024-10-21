@@ -29,6 +29,6 @@
 #define SCREEN_BUFFER 0x1800
 #define SCREEN_BUFFER_size 0x4000
 
-#define CAN_LOOPBACK
+//#define CAN_LOOPBACK
 
 #define ERROR_PRINT

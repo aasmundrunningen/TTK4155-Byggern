@@ -15,6 +15,7 @@ void USART0_Init() {
 
     //initialising UART0 as the standard stream, used for printf, etc.
     fdevopen(USART0_Poll_Transmit,USART0_Poll_Receive);
+    printf("------------------\n");
     
 }
 

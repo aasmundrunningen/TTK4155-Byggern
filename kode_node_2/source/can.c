@@ -21,6 +21,8 @@ void can_printmsg(CanMsg m){
 
 
 void can_init(CanInit init, uint8_t rxInterrupt){
+
+
     // Disable CAN
     CAN0->CAN_MR &= ~CAN_MR_CANEN; 
     

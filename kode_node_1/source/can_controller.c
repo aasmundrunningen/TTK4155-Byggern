@@ -225,6 +225,7 @@ void can_controller_test(){
     strcpy(message_tx.data, "hei du!");
 
     can_controller_send(message_tx, 0);
+    printf("--CAN test--\n");
     printf("id:%d, length:%d, data0:%c\n",
         can_controller_read(TXB0_BASE+SIDH),
         can_controller_read(TXB0_BASE+DLC),
@@ -233,6 +234,7 @@ void can_controller_test(){
 
     _delay_ms(500);
     printf("recived: flag:%d data:%s\n", recive_flag[0], recive_buffer[0].data);
+    printf("--CAN test finished--\n");
     
     
     /*message_rx = can_controller_read_rx_buffer(0);

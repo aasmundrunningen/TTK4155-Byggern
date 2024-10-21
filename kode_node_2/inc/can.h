@@ -19,14 +19,14 @@ __attribute__((packed)) struct CanInit {
         uint32_t reg;
     };
 };
-CanInit initRegister;
-
-initRegister.phase2 = 1;
+/*initRegister.phase2 = 1;
 initRegister.propag = 0;
 initRegister.phase1 = 1;
-initRegister.sjw = 1; // ??
+initRegister.sjw = 2;
 initRegister.brp = 68;
-initRegister.smp = 1;
+initRegister.smp = 1;*/
+
+
 
 
 /*

@@ -74,6 +74,20 @@ void update_analog_values() {
     if(analog_data.joystick_y > 0){
         analog_data.joystick_y = analog_data.joystick_y*100/156;
     }
+    
+    if(analog_data.joystick_x < -100){
+        analog_data.joystick_x = -100;
+    }
+    if(analog_data.joystick_y > -100){
+        analog_data.joystick_y = -100;
+    }
+    if(analog_data.joystick_x > 100){
+        analog_data.joystick_x = 100;
+    }
+    if(analog_data.joystick_y > 100){
+        analog_data.joystick_y = 100;
+    }
+    
     analog_data.slider_1 = get_adc_data(2);
     analog_data.slider_2 = get_adc_data(3);
     calculate_joystick_direction();
