@@ -1,6 +1,8 @@
 #include "usart.h"
 #include "avr/io.h"
 #include "config.h"
+#include <stdio.h>
+#include "util/delay.h"
 
 const unsigned int MYUBRR = F_CPU/16/BAUDRATE_UART-1; //prescaler for uart.
 
@@ -15,8 +17,6 @@ void USART0_Init() {
 
     //initialising UART0 as the standard stream, used for printf, etc.
     fdevopen(USART0_Poll_Transmit,USART0_Poll_Receive);
-    printf("------------------\n");
-    
 }
 
 int USART0_Poll_Transmit(char data, FILE *file) {

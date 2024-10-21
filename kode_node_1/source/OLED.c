@@ -23,7 +23,7 @@ void OLED_init() {
     _delay_ms(1000);
     OLED_clear_screen();
     OLED_update_screen();
-    printf("Finished OLED initialization\n");
+    printf("OLED init\n");
 }
 
 void OLED_print_letter(char _letter, uint8_t _coloum, uint8_t _page, uint8_t _inverted){

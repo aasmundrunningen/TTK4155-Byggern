@@ -4,7 +4,7 @@
 #include "config.h"
 #include "util/delay.h"
 
-uint8_t adc_data[3] = {3,3,3,3};
+uint8_t adc_data[3] = {3,3,3};
 volatile uint8_t* adc = (uint8_t*)ADC_address;
 
 void adc_update(){

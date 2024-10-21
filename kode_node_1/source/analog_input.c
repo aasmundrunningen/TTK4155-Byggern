@@ -20,7 +20,7 @@ void calibrate_joystick() {
     }
     analog_data.joystick_offsett_x = analog_data.joystick_offsett_x/JOYSTICK_CALIBRATION_SAMPLES;
     analog_data.joystick_offsett_y = analog_data.joystick_offsett_y/JOYSTICK_CALIBRATION_SAMPLES;
-    printf("offsett_x: %i   offsett_y: %i\n", analog_data.joystick_offsett_x, analog_data.joystick_offsett_y);
+    //printf("offsett_x: %i   offsett_y: %i\n", analog_data.joystick_offsett_x, analog_data.joystick_offsett_y);
     return;
 }
 

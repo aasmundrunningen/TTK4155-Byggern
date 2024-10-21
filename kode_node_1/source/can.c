@@ -6,13 +6,11 @@ void can_transmitt_joystick(){
     update_analog_values();
     CAN_MESSAGE message;
     ANALOG_DATA data = get_analog_data();
-    printf("data: x: %d, y: %d, dir: %d, s1: %u, s2: %u\n",
-        message.data[0],
-        message.data[1],
-        message.data[2],
-        message.data[3],
-        message.data[4]
-        );
+    printf("data:");
+    for(int i = 0; i < 5; i++){
+        printf("%d, ", message.data[i]);
+    }
+    printf("\n");
     
     message.id = 0;
     message.length = 4;

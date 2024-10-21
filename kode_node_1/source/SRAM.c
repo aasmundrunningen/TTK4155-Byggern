@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include "avr/io.h"
 #include "config.h"
+#include "SRAM.h"
 
 void SRAM_init(void){
     set_bit(MCUCR, SRE); //enables the external memory interface
     set_bit(SFIOR, XMM2);
-    SRAM_test();
+    //SRAM_test();
 }
 
 void SRAM_test(void)
