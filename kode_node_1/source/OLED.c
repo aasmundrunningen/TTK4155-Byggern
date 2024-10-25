@@ -6,24 +6,19 @@
 #include "OLED.h"
 #include "avr/pgmspace.h"
 
-
-const uint8_t oled_init_sequence[] = {0xae, 0xa1, 0xda, 0x12, 0xc8, 0xa8, 0x3f, 0xd5, 0x80, 0x81, 0x50, 0xd9, 0x21, 0x20, 0x02, 0xdb, 0x30, 0xad, 0x00, 0xa4, 0xa6, 0x40, 0xaf};
 volatile uint8_t * OLED_command_register = (uint8_t*)OLED_start_command;
 volatile uint8_t * OLED_data_register = (uint8_t*)OLED_start_data;
 
 volatile uint8_t * screen_buffer = (uint8_t*)SCREEN_BUFFER;
 
 void OLED_init() {
+    uint8_t oled_init_sequence[] = {0xae, 0xa1, 0xda, 0x12, 0xc8, 0xa8, 0x3f, 0xd5, 0x80, 0x81, 0x50, 0xd9, 0x21, 0x20, 0x02, 0xdb, 0x30, 0xad, 0x00, 0xa4, 0xa6, 0x40, 0xaf};
     for(int i = 0; i < sizeof(oled_init_sequence); i++){
         *OLED_command_register = oled_init_sequence[i];
     }
     OLED_clear_screen();
     OLED_print_string("BOOTING", 7, 4, 4, 0);
     OLED_update_screen();
-    _delay_ms(1000);
-    OLED_clear_screen();
-    OLED_update_screen();
-    printf("OLED init\n");
 }
 
 void OLED_print_letter(char _letter, uint8_t _coloum, uint8_t _page, uint8_t _inverted){

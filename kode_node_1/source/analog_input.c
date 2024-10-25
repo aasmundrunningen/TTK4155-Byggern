@@ -65,28 +65,35 @@ void calculate_joystick_direction(){
 }
 void update_analog_values() {
     adc_update();
-    analog_data.joystick_x = ((int16_t)(get_adc_data(0) - analog_data.joystick_offsett_x));
-    analog_data.joystick_y = ((int16_t)(get_adc_data(1) - analog_data.joystick_offsett_x));
+    int16_t temp_x = ((int16_t)(get_adc_data(0) - analog_data.joystick_offsett_x));
+    int16_t temp_y = ((int16_t)(get_adc_data(1) - analog_data.joystick_offsett_y));
+    printf("x: %d, y, %d", get_adc_data(0), get_adc_data(1));
     //some currsed shit with hardware, different scalling off values.
-    if(analog_data.joystick_x > 0){
-        analog_data.joystick_x = analog_data.joystick_x*100/156;
+    if(temp_x > 0){
+        temp_x = temp_x*100/156;
+    }else{
+        temp_x = temp_x;//*100/128;
     }
-    if(analog_data.joystick_y > 0){
-        analog_data.joystick_y = analog_data.joystick_y*100/156;
+    if(temp_y > 0){
+        temp_y = temp_y*100/156;
+    }else{
+        temp_y = temp_y;//*100/128;
     }
     
-    if(analog_data.joystick_x < -100){
-        analog_data.joystick_x = -100;
+    if(temp_x < -100){
+        temp_x = -100;
     }
-    if(analog_data.joystick_y > -100){
-        analog_data.joystick_y = -100;
+    if(temp_y > -100){
+        temp_y = -100;
     }
-    if(analog_data.joystick_x > 100){
-        analog_data.joystick_x = 100;
+    if(temp_x > 100){
+        temp_x = 100;
     }
-    if(analog_data.joystick_y > 100){
-        analog_data.joystick_y = 100;
+    if(temp_y > 100){
+        temp_y = 100;
     }
+    analog_data.joystick_x = (int8_t)temp_x;
+    analog_data.joystick_y = (int8_t)temp_y;
     
     analog_data.slider_1 = get_adc_data(2);
     analog_data.slider_2 = get_adc_data(3);

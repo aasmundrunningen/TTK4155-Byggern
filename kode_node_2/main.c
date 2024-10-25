@@ -25,7 +25,7 @@ int main()
     while (1) {
         if(can_rx(&can_message) == 1){
             printf("recived can message: id: %d, data:", can_message.id);
-            printf("x: %d, y: %d, dir: %d, s1: %u, s2: %u\n", 
+            printf("x: %x, y: %x, dir: %x, s1: %x, s2: %x\n", 
                 can_message.byte8.bytes[0], 
                 can_message.byte8.bytes[1], 
                 can_message.byte8.bytes[2], 
