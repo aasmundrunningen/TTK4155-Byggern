@@ -44,6 +44,7 @@ void handle_joystick_movement() {
         previous_joystick_state = get_analog_data().joystick_direction;
     }else{
         previous_joystick_state = get_analog_data().joystick_direction;
+        //whooops, good luck :)
         switch (get_analog_data().joystick_direction) {
             case NEUTRAL:
                 break;

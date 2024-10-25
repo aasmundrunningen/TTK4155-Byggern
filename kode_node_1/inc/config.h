@@ -14,7 +14,7 @@
 
 #define UART_CALLBACK //sens all characters back to the UART terminal
 #define JOYSTICK_CALIBRATION
-#define JOYSTICK_deadzone 30
+#define JOYSTICK_deadzone 50
 #define JOYSTICK_CALIBRATION_SAMPLES 1
 
 

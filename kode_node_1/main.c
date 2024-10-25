@@ -33,7 +33,7 @@ int main(){
     
     analog_init();
     
-    //timer0_enable_IRQ();
+    timer0_enable_IRQ();
     USART0_RX_IRQ_Enable(&buffer, 1);
 
     OLED_init();
@@ -46,13 +46,11 @@ int main(){
     while(1){
         heart_beat();
         
-        _delay_ms(500);
+        _delay_ms(2000);
         OLED_clear_screen();
         draw_menu();
         OLED_update_screen();
-        //can_transmitt_joystick();
-        update_analog_values();
-        //print_joystick();
+        can_transmitt_joystick();
     }
     return 0;
 }

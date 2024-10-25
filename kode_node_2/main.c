@@ -1,15 +1,20 @@
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include "sam.h"
 #include "config.h"
 #include "uart.h"
 #include "can.h"
+
+
+#include "analog_data.h"
 
 //Import UART from Node 2 starter code, then edit include path accordingly. Also, remember to update the makefile
 //#include "uart.h"
 
 CanMsg can_message;
 
+ANALOG_DATA rx_data;
 
 int main()
 {
@@ -24,14 +29,12 @@ int main()
 
     while (1) {
         if(can_rx(&can_message) == 1){
-            printf("recived can message: id: %d, data:", can_message.id);
-            printf("x: %x, y: %x, dir: %x, s1: %x, s2: %x\n", 
-                can_message.byte8.bytes[0], 
-                can_message.byte8.bytes[1], 
-                can_message.byte8.bytes[2], 
-                can_message.byte8.bytes[3], 
-                can_message.byte8.bytes[4]);
+            memcpy(&rx_data, can_message.byte8.bytes,8);
+            printf("x:%d, y:%d, slider1:%d, slider2:%d\n",
+                rx_data.joystick_x,
+                rx_data.joystick_y,
+                rx_data.slider_1,
+                rx_data.slider_2);
         }
     }
-    
 }

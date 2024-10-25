@@ -31,7 +31,7 @@ void analog_init(){
     analog_data.joystick_y = 0;
     analog_data.slider_1 = 0;
     analog_data.slider_2 = 0;
-    analog_data.joystick_direction = NEUTRAL;
+    analog_data.joystick_direction = NEUTRAL;print_joystick();
 
 
     #ifdef JOYSTICK_CALIBRATION
@@ -47,18 +47,18 @@ void calculate_joystick_direction(){
 
     if (abs(analog_data.joystick_y) - abs(analog_data.joystick_x) > 0) {
         if (analog_data.joystick_y > 0) {
-            analog_data.joystick_direction = RIGHT;
-            return;
-        } else {
-            analog_data.joystick_direction = LEFT;
-            return;
-        }
-    } else {
-        if (analog_data.joystick_x > 0) {
             analog_data.joystick_direction = UP;
             return;
         } else {
             analog_data.joystick_direction = DOWN;
+            return;
+        }
+    } else {
+        if (analog_data.joystick_x > 0) {
+            analog_data.joystick_direction = RIGHT;
+            return;
+        } else {
+            analog_data.joystick_direction = LEFT;
             return;
         }
     }
@@ -67,23 +67,19 @@ void update_analog_values() {
     adc_update();
     int16_t temp_x = ((int16_t)(get_adc_data(0) - analog_data.joystick_offsett_x));
     int16_t temp_y = ((int16_t)(get_adc_data(1) - analog_data.joystick_offsett_y));
-    printf("x: %d, y, %d", get_adc_data(0), get_adc_data(1));
     //some currsed shit with hardware, different scalling off values.
+    //It scales correct for low values but high values need scaling
     if(temp_x > 0){
         temp_x = temp_x*100/156;
-    }else{
-        temp_x = temp_x;//*100/128;
     }
     if(temp_y > 0){
         temp_y = temp_y*100/156;
-    }else{
-        temp_y = temp_y;//*100/128;
     }
     
     if(temp_x < -100){
         temp_x = -100;
     }
-    if(temp_y > -100){
+    if(temp_y < -100){
         temp_y = -100;
     }
     if(temp_x > 100){
@@ -92,6 +88,7 @@ void update_analog_values() {
     if(temp_y > 100){
         temp_y = 100;
     }
+
     analog_data.joystick_x = (int8_t)temp_x;
     analog_data.joystick_y = (int8_t)temp_y;
     

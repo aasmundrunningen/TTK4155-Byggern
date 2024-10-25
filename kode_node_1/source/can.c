@@ -1,32 +1,26 @@
 #include "analog_input.h"
 #include "config.h"
 #include "can_controller.h"
+#include <string.h>
+
+extern ANALOG_DATA analog_data[];
 
 void can_transmitt_joystick(){
     CAN_MESSAGE message;
-    ANALOG_DATA data = get_analog_data();
+    /*Can_Data_Interface data;
+    data.data = get_analog_data();
+    ANALOG_DATA t = get_analog_data();
+    printf("x:%d\n", t.joystick_x);*/
+    message.id = 0;
+    message.length = 8;
+    memcpy(message.data, analog_data, 8);
+    
+    
     printf("data:");
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < message.length; i++){
         printf("%d, ", message.data[i]);
     }
     printf("\n");
     
-
-
-    message.id = 0;
-    message.length = 5;
-    
-    /*message.data[0] = (int8_t)data.joystick_x;
-    message.data[1] = (int8_t)data.joystick_y;
-    message.data[2] = data.joystick_direction;
-    message.data[3] = (uint8_t)data.slider_1;
-    message.data[4] = (uint8_t)data.slider_2;*/
-
-    message.data[0] = 0;//(int8_t)data.joystick_x;
-    message.data[1] = -128;//(int8_t)data.joystick_y;
-    message.data[2] = 127;//data.joystick_direction;
-    message.data[3] = 5;//(uint8_t)data.slider_1;
-    message.data[4] = 1;
-
     can_controller_send(message, 0);
 }

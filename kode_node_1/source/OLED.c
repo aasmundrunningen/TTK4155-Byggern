@@ -19,6 +19,10 @@ void OLED_init() {
     OLED_clear_screen();
     OLED_print_string("BOOTING", 7, 4, 4, 0);
     OLED_update_screen();
+    _delay_ms(1000);
+    OLED_clear_screen();
+    OLED_update_screen();
+
 }
 
 void OLED_print_letter(char _letter, uint8_t _coloum, uint8_t _page, uint8_t _inverted){
