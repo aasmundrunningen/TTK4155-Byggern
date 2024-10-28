@@ -5,7 +5,7 @@
 #include "config.h"
 #include "uart.h"
 #include "can.h"
-
+#include "pwm.h"
 
 #include "analog_data.h"
 
@@ -24,17 +24,22 @@ int main()
     CanInit can_init_register = {1, 0, 1, 2, 68, 1};
     can_init(can_init_register, 0);
 
+    pwm_init();
+    printf("-------------------------\n");
+    pwm_print_status();
+    printf("-------------------------\n");
+
     //configure_uart();
-    printf("Hello World\n");
 
     while (1) {
         if(can_rx(&can_message) == 1){
             memcpy(&rx_data, can_message.byte8.bytes,8);
-            printf("x:%d, y:%d, slider1:%d, slider2:%d\n",
+            /*printf("x:%d, y:%d, slider1:%d, slider2:%d\n",
                 rx_data.joystick_x,
                 rx_data.joystick_y,
                 rx_data.slider_1,
                 rx_data.slider_2);
+            */
         }
     }
 }
