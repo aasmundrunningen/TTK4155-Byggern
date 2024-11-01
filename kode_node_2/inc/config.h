@@ -1,5 +1,7 @@
 #pragma once
 #include "sam3x8e.h"
+#define F_CPU 84000000
+
 
 #define set_bit(reg,bit )( reg |= ( 1 <<bit))
 #define clear_bit( reg , bit )( reg &= ~(1 << bit ))

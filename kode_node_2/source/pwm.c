@@ -74,12 +74,13 @@ PWM_Registers *PWM_reg = (PWM_Registers*)PWM;
 void pwm_init(){
     // Enables the PWM clock in PMC
     PMC->PMC_PCR = PMC_PCR_EN | PMC_PCR_CMD | ID_PWM; 
+    
 
     // Write protected ????
     // Disable PIO functions
     PIOB->PIO_PDR   |=   PIO_PB13 | PIO_PB17;
     // Set peripheral B instead of A for pin 13 and 17
-    PIOB->PIO_ABSR  &= PIO_PB13 | PIO_PB17;
+    PIOB->PIO_ABSR  |= PIO_PB13 | PIO_PB17;
 
 
 
@@ -112,6 +113,14 @@ void pwm_init(){
 
     //enables channel 1
     set_bit(PWM_reg->PWM_ENA, 1);
+
+}
+
+void pwm_set_duty(int8_t duty_cycle){
+    if(duty_cycle > 100){duty_cycle = 100;}
+    else if(duty_cycle < -100){duty_cycle = -100;}
+
+    PWM_reg->Channel[1].CDTYUPD = (int32_t)PWM_PERIODE - (int32_t)(((int32_t)duty_cycle+100)*(PWM_MAX_DUTY_CUCLE-PWM_MIN_DUTY_CYCLE)/200 + PWM_MIN_DUTY_CYCLE);
 
 }
 

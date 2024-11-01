@@ -1,7 +1,7 @@
 #include "sam.h"
 #include <stdio.h>
-
-#define F_CPU 84000000
+#include "time.h"
+#include "config.h"
 
 typedef struct {
     uint8_t buffer[1024];
