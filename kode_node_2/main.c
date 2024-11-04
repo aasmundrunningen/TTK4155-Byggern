@@ -52,6 +52,7 @@ int main()
             */
            //printf("x:%d, y:%d\n", rx_data.joystick_x, rx_data.joystick_y);
         }
+        pwm_set_duty(rx_data.joystick_x);
         score_counter();
        
         //time_32b = (uint32_t)time_now();

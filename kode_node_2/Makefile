@@ -1,6 +1,6 @@
 LDSCRIPT = sam/flash.ld
 BOOTUP = sam/sam3x/source/exceptions.c sam/sam3x/source/startup_sam3x.c sam/sam3x/source/system_sam3x.c
-DRIVERS = source/uart.c source/can.c source/time.c source/pwm.c source/adc.c source/game_engine.c
+DRIVERS = source/uart.c source/can.c source/time.c source/pwm.c source/adc.c source/game_engine.c source/encoder.c
 MCUTYPE = __SAM3X8E__
 # List all source files to be compiled; separate with whitespace.
 # In particular, remember to add the UART and CAN starter files.

@@ -75,8 +75,6 @@ void pwm_init(){
     // Enables the PWM clock in PMC
     PMC->PMC_PCR = PMC_PCR_EN | PMC_PCR_CMD | ID_PWM; 
     
-
-    // Write protected ????
     // Disable PIO functions
     PIOB->PIO_PDR   |=   PIO_PB13 | PIO_PB17;
     // Set peripheral B instead of A for pin 13 and 17
