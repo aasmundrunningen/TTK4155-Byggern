@@ -46,11 +46,10 @@ int main(){
     while(1){
         heart_beat();
         
-        _delay_ms(2000);
+        _delay_ms(500);
         OLED_clear_screen();
         draw_menu();
         OLED_update_screen();
-        can_transmitt_joystick();
     }
     return 0;
 }

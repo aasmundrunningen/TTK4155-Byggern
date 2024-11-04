@@ -20,7 +20,7 @@ void calibrate_joystick() {
     }
     analog_data.joystick_offsett_x = analog_data.joystick_offsett_x/JOYSTICK_CALIBRATION_SAMPLES;
     analog_data.joystick_offsett_y = analog_data.joystick_offsett_y/JOYSTICK_CALIBRATION_SAMPLES;
-    //printf("offsett_x: %i   offsett_y: %i\n", analog_data.joystick_offsett_x, analog_data.joystick_offsett_y);
+    printf("offsett_x: %i   offsett_y: %i\n", analog_data.joystick_offsett_x, analog_data.joystick_offsett_y);
     return;
 }
 
@@ -31,8 +31,12 @@ void analog_init(){
     analog_data.joystick_y = 0;
     analog_data.slider_1 = 0;
     analog_data.slider_2 = 0;
-    analog_data.joystick_direction = NEUTRAL;print_joystick();
-
+    analog_data.joystick_direction = NEUTRAL;
+    
+    print_joystick();
+    for(int i = 0; i < 10; i++){
+        adc_update();
+    }
 
     #ifdef JOYSTICK_CALIBRATION
         calibrate_joystick();
@@ -65,30 +69,22 @@ void calculate_joystick_direction(){
 }
 void update_analog_values() {
     adc_update();
-    int16_t temp_x = ((int16_t)(get_adc_data(0) - analog_data.joystick_offsett_x));
-    int16_t temp_y = ((int16_t)(get_adc_data(1) - analog_data.joystick_offsett_y));
+    int16_t temp_x = (((int16_t)get_adc_data(0) - (uint16_t)analog_data.joystick_offsett_x));
+    int16_t temp_y = (((int16_t)get_adc_data(1) - (uint16_t)analog_data.joystick_offsett_y));
     //some currsed shit with hardware, different scalling off values.
     //It scales correct for low values but high values need scaling
     if(temp_x > 0){
-        temp_x = temp_x*100/156;
-    }
-    if(temp_y > 0){
-        temp_y = temp_y*100/156;
-    }
-    
-    if(temp_x < -100){
-        temp_x = -100;
-    }
-    if(temp_y < -100){
-        temp_y = -100;
-    }
-    if(temp_x > 100){
-        temp_x = 100;
-    }
-    if(temp_y > 100){
-        temp_y = 100;
+        temp_x = temp_x*100/(256 - analog_data.joystick_offsett_x);
+    }else{
+        temp_x = temp_x*100/analog_data.joystick_offsett_x;
     }
 
+    if(temp_y > 0){
+        temp_y = temp_y*100/(256 - analog_data.joystick_offsett_y);
+    }else{
+        temp_y = temp_y*100/analog_data.joystick_offsett_y;
+    }
+    
     analog_data.joystick_x = (int8_t)temp_x;
     analog_data.joystick_y = (int8_t)temp_y;
     

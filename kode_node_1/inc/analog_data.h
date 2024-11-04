@@ -14,8 +14,8 @@ static const char * JOYSTICK_DIRECTION_string[] = {
 
 
 typedef struct {
-    int8_t joystick_offsett_x;
-    int8_t joystick_offsett_y;
+    uint8_t joystick_offsett_x;
+    uint8_t joystick_offsett_y;
     int8_t joystick_x;
     int8_t joystick_y;
     uint8_t slider_1;

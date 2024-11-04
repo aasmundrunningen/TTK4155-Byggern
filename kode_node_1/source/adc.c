@@ -7,11 +7,13 @@
 uint8_t adc_data[4] = {3,3,3,3};
 volatile uint8_t* adc = (uint8_t*)ADC_address;
 
+#define ADC_FILTER_PARAM 4
+
 void adc_update(){
     *adc = 1;
     _delay_us(50); //conversion time 120ms
     for(int i = 0; i < 4; i++){
-        adc_data[i] = *adc;
+        adc_data[i] = (uint8_t)(((uint16_t)adc_data[i]*(10-ADC_FILTER_PARAM) + ((uint16_t)*adc * ADC_FILTER_PARAM))/10);
     }
 }
 

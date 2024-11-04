@@ -14,13 +14,5 @@ void can_transmitt_joystick(){
     message.id = 0;
     message.length = 8;
     memcpy(message.data, analog_data, 8);
-    
-    
-    printf("data:");
-    for(int i = 0; i < message.length; i++){
-        printf("%d, ", message.data[i]);
-    }
-    printf("\n");
-    
     can_controller_send(message, 0);
 }

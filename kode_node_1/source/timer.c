@@ -8,6 +8,7 @@ uint8_t pin_toogle = 0;
 void timer0_IRQ_handler(){
     set_bit(PORTB, PIN1);
     handle_joystick_movement();
+    can_transmitt_joystick();
     clear_bit(PORTB, PIN1);
 
 }
