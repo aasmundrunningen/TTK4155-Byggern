@@ -4,7 +4,7 @@
 #include "time.h"
 
 
-uint64_t calib;
+static uint64_t calib;
 static uint64_t now = 0;
     
 __attribute__((constructor)) void time_init(void){

@@ -9,6 +9,7 @@
 #include "adc.h"
 #include "time.h"
 
+#include "game_engine.h"
 #include "analog_data.h"
 
 //Import UART from Node 2 starter code, then edit include path accordingly. Also, remember to update the makefile
@@ -36,7 +37,8 @@ int main()
     adc_init();
 
     //configure_uart();
-
+    uint64_t last_printf = 0;
+    uint32_t time_32b = 0;
     while (1) {
         //delay(10000);
         //printf("%d\n",adc_read());
@@ -48,8 +50,20 @@ int main()
                 rx_data.slider_1,
                 rx_data.slider_2);
             */
+           //printf("x:%d, y:%d\n", rx_data.joystick_x, rx_data.joystick_y);
         }
-        pwm_set_duty(rx_data.joystick_x);
+        score_counter();
+       
+        //time_32b = (uint32_t)time_now();
+        //printf("%ld\n", seconds(time_now()));
+        /*uint64_t time_ms = msecs(time);
+        if((uint32_t)last_printf + (uint32_t)1000 < (uint32_t)time_ms){
+            //printf("game_data: %d, %d\n", get_game_data().score, get_game_data().last_point_time);
+            last_printf = msecs(time);
+            printf("hei %d \n", last_printf);
+        }*/
+       printf("%d\n", get_game_data().score);
+        
         
     }
 }

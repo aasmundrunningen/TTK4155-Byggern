@@ -8,6 +8,7 @@
 // Time is used to mean both absolute time since device start, and a duration
 
 // Return the time since the device was started.
+
 uint64_t time_now(void);
 
 // Convert standard wall time units to ticks
