@@ -66,51 +66,52 @@ typedef struct {
 
 PWM_Registers *PWM_reg = (PWM_Registers*)PWM;
 
-#define PWM_PERIODE 52500
-#define PWM_MIN_DUTY_CYCLE (uint32_t)(PWM_PERIODE * 9/200)
-#define PWM_MAX_DUTY_CUCLE (uint32_t)(PWM_PERIODE * 21/200)
-
+#define PWM_MOTOR_PERIODE 150 //setting the frequenzy to high to hear it :)
+#define PWM_SERVO_PERIODE 52500
+#define PWM_SERVO_MIN_DUTY_CYCLE (uint32_t)(PWM_SERVO_PERIODE * 9/200)
+#define PWM_SERVO_MAX_DUTY_CUCLE (uint32_t)(PWM_SERVO_PERIODE * 21/200)
+#define MOTOR_DIR_PIN PIN_PC23
 
 void pwm_init(){
     // Enables the PWM clock in PMC
-    PMC->PMC_PCR = PMC_PCR_EN | PMC_PCR_CMD | ID_PWM; 
+    PMC->PMC_PCR |= PMC_PCR_EN | PMC_PCR_CMD | ID_PWM; 
     
-    // Disable PIO functions
-    PIOB->PIO_PDR   |=   PIO_PB13 | PIO_PB17;
-    // Set peripheral B instead of A for pin 13 and 17
-    PIOB->PIO_ABSR  |= PIO_PB13 | PIO_PB17;
+    //Enable Servo PWM pins
+    PIOB->PIO_PDR   |=   PIO_PB13 | PIO_PB17; // Disable PIO functions
+    PIOB->PIO_ABSR  |=   PIO_PB13 | PIO_PB17; // Set peripheral B instead of A for pin 13 and 17
 
+    //Enable DC PWM pin
+    PIOB->PIO_PDR   |=   PIO_PB12; // Disable PIO functions
+    PIOB->PIO_ABSR  |=   PIO_PB12; // Set peripheral B instead of A for pin 13 and 17
 
+    
+    PWM_reg->PWM_WPCR = 0x5057AD00; //writing "PWM" to WPKEY and 0 to WPCMD dissabling write protection
+    
+    for(int i = 0; i < 2; i++){
+        clear_byte(PWM_reg->Channel[i].CMR, 0);      //set channel i clock to master clock/32
+        set_byte(PWM_reg->Channel[i].CMR, 0, 0b101); //set channel i clock to master clock/32
+        clear_bit(PWM_reg->Channel[i].CMR, 8);       //set left aligned waveform
+        clear_bit(PWM_reg->Channel[i].CMR, 9);       //set left aligned waveform
+        PWM_reg->Channel[i].DT = 0;                  //set deadtime to 0
+    }
 
-    //write 0 to WPCMD disabling write protection
-
-    //writing "PWM" to WPKEY and 0 to WPCMD dissabling write protection
-    PWM_reg->PWM_WPCR = 0x5057AD00;
+    //periode and initial duty cycle of servo 
+    PWM_reg->Channel[1].CPRD = PWM_SERVO_PERIODE; //set channel periode register to PWM_SERVO_PERIODE giving 20mS periode
+    PWM_reg->Channel[1].CDTY = PWM_SERVO_MIN_DUTY_CYCLE; //set duty cycle to PWM_SERVO_MIN_DUTY_CUCLE
+    
+    
+    //periode and duty cycle of DC-motor
+    PWM_reg->Channel[0].CPRD = PWM_MOTOR_PERIODE;
+    PWM_reg->Channel[0].CDTY = 0; //min duty cycle
     
 
-    //set channel 1 clock to master clock/32
-    clear_byte(PWM_reg->Channel[1].CMR, 0);
-    set_byte(PWM_reg->Channel[1].CMR, 0, 0b101);
-    
-    //set left aligned waveform
-    clear_bit(PWM_reg->Channel[1].CMR, 8);
+    PWM_reg->PWM_SCM = 0; //dissable all syncronazationPWM_reg->PWM_WPCR
+    set_bit(PWM_reg->PWM_ENA, 1); //enables channel 1
+    set_bit(PWM_reg->PWM_ENA, 0); //enables channel 0
 
-    clear_bit(PWM_reg->Channel[1].CMR, 9);    
-
-    //set channel periode register to PWM_PERIODE giving 20mS periode
-    PWM_reg->Channel[1].CPRD = PWM_PERIODE;
-
-    //set duty cycle to PWM_MIN_DUTY_CUCLE
-    PWM_reg->Channel[1].CDTY = 30000;//PWM_MIN_DUTY_CYCLE;
-
-    //set deadtime to 0
-    PWM_reg->Channel[1].DT = 0;
-
-    //dissable all syncronazationPWM_reg->PWM_WPCR
-    PWM_reg->PWM_SCM = 0;
-
-    //enables channel 1
-    set_bit(PWM_reg->PWM_ENA, 1);
+    set_bit(PIOC->PIO_OER, 23); //enables servo pin as output
+    set_bit(PIOC->PIO_OWER, 23); //enables servo pin as output
+    printf("PIOC_OWSR: %x\n", PIOC->PIO_OWSR);
 
 }
 
@@ -118,18 +119,26 @@ void pwm_set_duty(int8_t duty_cycle){
     if(duty_cycle > 100){duty_cycle = 100;}
     else if(duty_cycle < -100){duty_cycle = -100;}
 
-    PWM_reg->Channel[1].CDTYUPD = (int32_t)PWM_PERIODE - (int32_t)(((int32_t)duty_cycle+100)*(PWM_MAX_DUTY_CUCLE-PWM_MIN_DUTY_CYCLE)/200 + PWM_MIN_DUTY_CYCLE);
+    PWM_reg->Channel[1].CDTYUPD = (int32_t)PWM_SERVO_PERIODE - (int32_t)(((int32_t)duty_cycle+100)*(PWM_SERVO_MAX_DUTY_CUCLE-PWM_SERVO_MIN_DUTY_CYCLE)/200 + PWM_SERVO_MIN_DUTY_CYCLE);
 
 }
 
-void pwm_print_status(){
+void pwm_motor_controll(int8_t duty_cycle){
+    if(duty_cycle >= 0){
+        clear_bit(PIOC->PIO_ODSR, 23);
+    }else{
+        set_bit(PIOC->PIO_ODSR, 23);
+    }
+    PWM_reg->Channel[0].CDTYUPD = (uint32_t)(256-abs(duty_cycle)) * PWM_MOTOR_PERIODE/256;
+    
+}
+
+void PWM_SERVO_Print_status(){
     printf("WPSR: %x, address: %x \n", PWM_reg->PWM_WPSR, &(PWM_reg->PWM_WPSR));
     printf("PMC_STATUS 0: %x \n", *(uint32_t*)0x400E0618);
     printf("PMC_STATUS 1: %x \n", *(uint32_t*)0x400E0708);
     printf("PIO_STATUS: %x \n", *(uint32_t*)0x400E1008);
     printf("PWM_status: %x \n", *(uint32_t*)0x4009400C);
-        
-
     int volatile * reg = (int *)0x400E0618;
 }
 
