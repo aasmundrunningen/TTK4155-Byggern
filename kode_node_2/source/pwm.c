@@ -109,8 +109,8 @@ void pwm_init(){
     set_bit(PWM_reg->PWM_ENA, 1); //enables channel 1
     set_bit(PWM_reg->PWM_ENA, 0); //enables channel 0
 
-    set_bit(PIOC->PIO_OER, 23); //enables servo pin as output
-    set_bit(PIOC->PIO_OWER, 23); //enables servo pin as output
+    set_bit(PIOC->PIO_OER, 23); //enables direction pin as output
+    set_bit(PIOC->PIO_OWER, 23); //enables direction pin as output
     printf("PIOC_OWSR: %x\n", PIOC->PIO_OWSR);
 
 }

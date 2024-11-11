@@ -20,8 +20,8 @@ typedef struct {
     int8_t joystick_y;
     uint8_t slider_1;
     uint8_t slider_2;
+    uint8_t activate_solenoid;
     JOYSTICK_DIRECTION joystick_direction;
-    uint8_t dummy;
 } ANALOG_DATA;
 
 

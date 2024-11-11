@@ -4,11 +4,14 @@
 #include "OLED_menu.h"
 
 uint8_t pin_toogle = 0;
+extern OLED_menu_state_machine omsm[];
 
 void timer0_IRQ_handler(){
     set_bit(PORTB, PIN1);
     handle_joystick_movement();
-    can_transmitt_joystick();
+    if(omsm->playing == 1){
+        can_transmitt_joystick();
+    }
     clear_bit(PORTB, PIN1);
 
 }

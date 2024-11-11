@@ -64,6 +64,7 @@
     "stdlib.h": "c",
     "config.h": "c",
     "timer.h": "c",
-    "can_controller.h": "c"
+    "can_controller.h": "c",
+    "pgmspace.h": "c"
   }
 }

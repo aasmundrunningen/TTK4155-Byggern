@@ -32,7 +32,22 @@ void analog_init(){
     analog_data.slider_1 = 0;
     analog_data.slider_2 = 0;
     analog_data.joystick_direction = NEUTRAL;
+
+
+    // setup PB1 as input GPIO for button trigger.
+    //set_bit(PUED, PIN3);
+    set_bit(PORTD, PIN3);
+    clear_bit(DDRD,PIN3); //set pin as input
+    //set interrupt on falling edge of int1
+    set_bit(MCUCR,ISC11);
+    clear_bit(MCUCR,ISC10);
+
+    //enables interrupt on int0
+    set_bit(GICR,INT1); 
     
+    set_bit(DDRB,PIN3);
+
+
     print_joystick();
     for(int i = 0; i < 10; i++){
         adc_update();
@@ -41,6 +56,10 @@ void analog_init(){
     #ifdef JOYSTICK_CALIBRATION
         calibrate_joystick();
     #endif
+}
+
+void button_interrupt_handler() {
+    analog_data.activate_solenoid = 1;
 }
 
 void calculate_joystick_direction(){

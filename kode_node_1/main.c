@@ -42,7 +42,7 @@ int main(){
     sei(); //enables global interrupts
 
     //can_controller_test();
-   
+    printf("ok \n");
     while(1){
         heart_beat();
         

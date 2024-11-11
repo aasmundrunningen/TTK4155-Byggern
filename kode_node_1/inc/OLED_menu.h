@@ -23,6 +23,7 @@ typedef struct  {
     uint8_t level0_sel;
     uint8_t level1_sel;
     uint8_t selected_line;
+    uint8_t playing;
 } OLED_menu_state_machine;
 
 void handle_button_press();

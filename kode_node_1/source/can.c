@@ -15,4 +15,5 @@ void can_transmitt_joystick(){
     message.length = 8;
     memcpy(message.data, analog_data, 8);
     can_controller_send(message, 0);
+    analog_data->activate_solenoid = 0;
 }

@@ -12,3 +12,5 @@ void calculate_joystick_direction();
 void print_slider();
 void print_joystick();
 ANALOG_DATA get_analog_data();
+
+void button_interrupt_handler();

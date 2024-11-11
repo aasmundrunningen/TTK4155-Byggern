@@ -12,6 +12,8 @@
 #define PID_kp 1200
 #define PID_ki 2
 
+#define SOLENOID_ACTIVATION_CYCLES 10
+
 uint32_t encoder_range = 0;
 
 int8_t motor_sp = 0;
@@ -45,11 +47,16 @@ void motor_controller_init(){
     pwm_motor_controll(0);
     encoder_range = abs(fetch_encoder_data());
     encoder_addjust_offsett(-(int32_t)encoder_range/2);
+
+
+    set_bit(PIOC->PIO_OER, 24); //enables direction pin as output
+    set_bit(PIOC->PIO_OWER, 24); //enables direction pin as output
+
 }
 
 void motor_controller_set_sp(int8_t sp){
     PID_sp = (int32_t)sp * (int32_t)encoder_range/(2*100);
-    printf("SP: %d, PID_pow: %i, PID_sp: %i, PID_cp: %i, encod_rang: %i\n", sp, PID_power, PID_sp, PID_cp, encoder_range);
+    //printf("SP: %d, PID_pow: %i, PID_sp: %i, PID_cp: %i, encod_rang: %i\n", sp, PID_power, PID_sp, PID_cp, encoder_range);
 }
 
 void TC0_enable_interrupt(){
@@ -73,9 +80,24 @@ void TC0_Handler(void){
     PID_cp = fetch_encoder_data();
     pwm_motor_controll(PID());
     uint32_t a = TC0->TC_CHANNEL[0].TC_SR;
+    solenoid_controll();
 }
 
+uint8_t solenoid_state = 0;
+void solenoid_controll(){
+    if(solenoid_state > 0){
+        clear_bit(PIOC->PIO_ODSR, 24);
+        solenoid_state --;
+    }else{
+        set_bit(PIOC->PIO_ODSR, 24);
+    }
+}
 
+void activate_solenoid(){
+    if(solenoid_state == 0){
+        solenoid_state = SOLENOID_ACTIVATION_CYCLES;
+    }
+}
 
 int32_t PID(){
     PID_error = PID_sp - PID_cp;
