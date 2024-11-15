@@ -37,9 +37,4 @@ void pwm_init(){
     //enables compare output mode on OC1A and not on OC1B
     //set_bit(TCCR1A, COM1A0);
     //clear_bit(TCCR1A, COM1A1);
-
-
-
-
-
 }

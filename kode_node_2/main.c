@@ -27,7 +27,7 @@ int main()
     uart_init(CPU_FREQ, UART_BAUDRATE);
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
     CanInit can_init_register = {1, 0, 1, 2, 68, 1};
-    CanMsg CAN_score = {.id = 2, .length = 1, .byte[1] = {0}};
+    CanMsg CAN_score = {.id = 2, .length = 8};
     can_init(can_init_register, 0);
     pwm_init();
     adc_init();

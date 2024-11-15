@@ -25,4 +25,4 @@ void can_controller_send(CAN_MESSAGE _message, uint8_t _buffer);
 CAN_MESSAGE can_controller_read_rx_buffer(uint8_t _buffer);
 
 
-void can_controller_test();
+//void can_controller_test();

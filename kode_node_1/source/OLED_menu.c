@@ -11,6 +11,8 @@
 
 
 OLED_menu_state_machine omsm = {.menu_level = 0, .level0_sel = 0, .level1_sel = 0,  .selected_line = 0, .playing = 0};
+extern CAN_MESSAGE recive_buffer[2];
+
 
 PROGMEM const char menu_0[3][16] = {"play game?", "i am boring", "fun facts"};
 PROGMEM const char menu_1[3][3][16] = {
@@ -190,6 +192,10 @@ void draw_menu () {
         }
     } else {
         //OLED_print_string("6",1, 7, 4, 0);
-        OLED_print_string((char)(can_controller_read_rx_buffer(0).data[0]), 1, 7, 4, 0);
+        printf("%d,", recive_buffer[0].data[0]);
+        printf("%d\n", recive_buffer[1].data[0]);
+        char str[3];
+        sprintf(str, "%03u", recive_buffer[0].data[0]);
+        OLED_print_string(str, 3, 7, 4, 0);
     }
 }

@@ -95,10 +95,14 @@ void can_controller_init(){
     */
     can_controller_write(CNF3, 1);
 
-    can_controller_write(CANINTE, 0b00100011); //enables interrupt on error and recive buffer 0 and 1
+    //can_controller_write(CANINTE, 0b00100011); //enables interrupt on error and recive buffer 0 and 1
+    can_controller_write(CANINTE, 0b00000011); //enables interrupt on error and recive buffer 0 and 1
 
-    can_controller_write(RXB0_BASE+CTRL, 0b011001000); //RXB0CTRL, turn of mask and enable rollover to buffer 0
+
+    can_controller_write(RXB0_BASE+CTRL, 0b011000100); //RXB0CTRL, turn of mask and enable rollover to buffer 0
     can_controller_write(RXB1_BASE+CTRL, 0b011000000); //RXB1CTRL, turn of mask
+
+    can_controller_write(BFCTRL, 0b00001111); // Turn on dpin functions on RX
 
     can_controller_write(TXB0_BASE+SIDL, 0);
     can_controller_write(TXB1_BASE+SIDL, 0);
@@ -133,19 +137,26 @@ void can_controller_send(CAN_MESSAGE _message, uint8_t buffer) {
 }
 
 void can_controller_IRQ_handler(){
-    uint8_t status = can_controller_read_status();
-    if(status&1){
+    //uint8_t status = can_controller_read_status();
+    heart_beat();
+    recive_buffer[0] = can_controller_read_rx_buffer(0);
+    recive_buffer[1] = can_controller_read_rx_buffer(1);
+    can_controller_write(CANINTF, 0); //clears whole interrupt register
+    /*if(status & 0x1){
         //recive buffer 0
         recive_flag[0]=1;
         recive_buffer[0] = can_controller_read_rx_buffer(0);
         can_controller_bit_modify(CANINTF, 1,0);
     }
-    if(status&2){
+    if(status & 0x2){
         recive_flag[1]=1;
         recive_buffer[1] = can_controller_read_rx_buffer(1);
         can_controller_bit_modify(CANINTF, 2,0);
     }
-    
+    else{
+        can_controller_write(CANINTF, 0); //clears whole interrupt register
+    }*/
+
 }
 
 void can_controller_recive_IRQ_enable(){
@@ -215,6 +226,8 @@ void can_controller_rts(uint8_t _buffer){
     spi_transmitt_recive(data, 1);
 }
 
+
+/*
 CAN_MESSAGE message_rx;
 CAN_MESSAGE message_tx;
 
@@ -239,5 +252,6 @@ void can_controller_test(){
     
     /*message_rx = can_controller_read_rx_buffer(0);
     printf("recived: id:%d, length:%d, data:%s\n",message_rx.id, message_rx.length, message_rx.data);
-    */
+    
 }
+*/

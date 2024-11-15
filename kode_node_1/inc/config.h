@@ -30,5 +30,5 @@
 #define SCREEN_BUFFER_size 0x4000
 
 //#define CAN_LOOPBACK
-
-#define ERROR_PRINT
+//#define UART_RX_ENABLED
+//#define ERROR_PRINT

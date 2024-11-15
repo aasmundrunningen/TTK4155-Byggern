@@ -38,11 +38,12 @@ int USART0_Poll_Receive(FILE *file) {
     return UDR0;
 }
 
-
-char* USART0_data_buffer;
+#ifdef UART_RX_ENABLED
+char USART0_data_buffer[8];
 int USART0_data_buffer_counter;
-int USART0_data_buffer_size;
+int USART0_data_buffer_size = 1;
 int USART0_data_ready = 0;
+char buffer[8];
 void USART0_RX_IRQ_Handler(void){
     set_bit(PORTA, PA0);
     USART0_data_buffer[USART0_data_buffer_counter] = UDR0;
@@ -59,17 +60,16 @@ void USART0_RX_IRQ_Handler(void){
        USART0_Poll_Transmit('\n', NULL);
     }
     #endif
-    USART0_RX_IRQ_Enable(USART0_data_buffer, USART0_data_buffer_size);
+    USART0_RX_IRQ_Enable();
 }
 
 int USART0_RX_DATA_Ready(){
     return USART0_data_ready;
 }
 
-void USART0_RX_IRQ_Enable(char* data_buffer, int buffer_size){
-    USART0_data_buffer = data_buffer;
+void USART0_RX_IRQ_Enable(){
     USART0_data_buffer_counter = 0;
-    USART0_data_buffer_size = buffer_size;
     USART0_data_ready = 0;
     set_bit(UCSR0B, RXCIE0);
 }
+#endif

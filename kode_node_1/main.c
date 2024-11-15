@@ -20,10 +20,6 @@
 #include "utilities.h"
 
 
-
-char buffer[8];
-
-
 int main(){
     utilities_init();
     pwm_init();
@@ -34,18 +30,17 @@ int main(){
     analog_init();
     
     timer0_enable_IRQ();
-    USART0_RX_IRQ_Enable(&buffer, 1);
+    
+    #ifdef UART_RX_ENABLED
+        USART0_RX_IRQ_Enable();
+    #endif
 
     OLED_init();
     can_controller_init();
 
     sei(); //enables global interrupts
 
-    //can_controller_test();
-    printf("ok \n");
-    while(1){
-        heart_beat();
-        
+    while(1){    
         _delay_ms(500);
         OLED_clear_screen();
         draw_menu();
