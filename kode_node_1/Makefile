@@ -1,6 +1,5 @@
 # List all source files to be compiled; separate with space
-SOURCE_FILES := main.c
-
+SOURCE_FILES := main.c source/usart.c source/utilities.c source/adc.c source/analog_input.c source/SRAM.c  source/OLED.c source/timer.c source/OLED_menu.c source/spi.c source/pwm.c source/can_controller.c source/can.c source/interrupts.c
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := yes
 
@@ -14,16 +13,18 @@ BUILD_DIR := build
 TARGET_CPU := atmega162
 TARGET_DEVICE := m162
 
-CC := avr-gcc
-CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) -ggdb
+CC := avr-gcc #-Wl,--defsym=__heap_start=0x1800,--defsym=__heap_end=0x1FFF
+CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) -ggdb -Iinc
+
 
 OBJECT_FILES = $(SOURCE_FILES:%.c=$(BUILD_DIR)/%.o)
-
+#OBJECT_FILES = $(patsubst %.c,$(BUILD_DIR)/%.o,$(SOURCE_FILES))
 .DEFAULT_GOAL := $(BUILD_DIR)/main.hex
 
+#makes the build directory and the source subdirectory
 $(BUILD_DIR):
 	mkdir $(BUILD_DIR)
-
+	mkdir $(BUILD_DIR)/source
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
